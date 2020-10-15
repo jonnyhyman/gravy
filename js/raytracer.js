@@ -1,6 +1,6 @@
 
 
-var RayState = function(size) 
+var RayState = function(size)
 {
 	var posData   = new Float32Array(size*size*4); // ray position
 	var dirData   = new Float32Array(size*size*4); // ray direction
@@ -43,7 +43,7 @@ RayState.prototype.attach = function(fbo)
 	fbo.attachTexture(this.dirTex, 1);
 	fbo.attachTexture(this.rngTex, 2);
 	fbo.attachTexture(this.rgbTex, 3);
-	if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE) 
+	if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE)
 	{
 		GLU.fail("Invalid framebuffer");
 	}
@@ -58,9 +58,9 @@ RayState.prototype.detach = function(fbo)
 	fbo.detachTexture(3);
 }
 
-/** 
+/**
 * Interface to the raytracer.
-* @constructor 
+* @constructor
 * @property {number} [maxNumSteps=256]          - maximum number of raymarching steps per path segment
 * @property {number} [raySize=128]              - number of rays per wavefront is the square of this
 * @property {number} [marchDistance=100.0]      - the total distance travelled by each ray
@@ -79,6 +79,10 @@ var Raytracer = function()
 {
 	this.gl = GLU.gl;
 	var gl = GLU.gl;
+
+	// Fixed window size
+	this.width = 4096;
+	this.height = 2160;
 
 	// Initialize textures containing ray states
 	this.raySize = 128;
@@ -154,7 +158,7 @@ Raytracer.prototype.compileShaders = function()
 {
 	var potentialObj = gravy.getPotential();
 	if (potentialObj==null) return;
-	
+
 	// Inject code for the current scene and material:
 	let code = potentialObj.program();
 
@@ -179,7 +183,7 @@ Raytracer.prototype.initStates = function()
 	this.rayCount = this.raySize*this.raySize;
 	this.currentState = 0;
 	this.rayStates = [new RayState(this.raySize), new RayState(this.raySize)];
-		
+
 	// Create the buffer of texture coordinates, which maps each drawn line
 	// to its corresponding texture lookup.
 	{
@@ -225,11 +229,11 @@ Raytracer.prototype.composite = function()
 	this.compProgram.uniformF("invNumRays", 1.0/Math.max(this.raysTraced, 1));
 	this.compProgram.uniformF("exposure", this.exposure);
 	this.compProgram.uniformF("invGamma", 1.0/this.gamma);
-	
+
 	let potentialObj = gravy.getPotential();
 	if (potentialObj==null) return;
 	this.compProgram.uniformF("timeScale", this.timeScale);
-	this.compProgram.uniformF("timePhase", 2.0*Math.PI*this.time_ms/(1000.0*this.timePeriodSecs)); 
+	this.compProgram.uniformF("timePhase", 2.0*Math.PI*this.time_ms/(1000.0*this.timePeriodSecs));
 	this.compProgram.uniform3Fv("colorA", this.colorA);
 	this.compProgram.uniform3Fv("colorB", this.colorB);
 
@@ -264,7 +268,7 @@ Raytracer.prototype.render = function()
 	this.fbo.bind();
 
 	// Clear wavebuffer
-	{	
+	{
 		this.quadVbo.bind();
 		this.fbo.drawBuffers(1);
 		gl.viewport(0, 0, this.width, this.height);
@@ -280,21 +284,21 @@ Raytracer.prototype.render = function()
 		gl.viewport(0, 0, this.raySize, this.raySize);
 
 		this.fbo.drawBuffers(4);
-		
+
 		let current = this.currentState;
 		let next = 1 - current;
-		
+
 		this.rayStates[next].attach(this.fbo);
 		this.quadVbo.bind();
 		this.initProgram.bind(); // Start all rays at emission point(s)
 		this.rayStates[current].rngTex.bind(0); // Read random seed from the current state
 		this.initProgram.uniformTexture("RngData", this.rayStates[current].rngTex);
-		
+
 		this.initProgram.uniform3F("SourcePos", this.sourceDist, 0.0, 0.0);
 		this.initProgram.uniform3F("SourceDir", -1.0, 0.0, 0.0);
 		this.initProgram.uniformF("SourceRadius", this.sourceRadius);
 		this.initProgram.uniformF("SourceBeamAngle", this.sourceBeamAngle);
-		
+
 		this.quadVbo.draw(this.initProgram, gl.TRIANGLE_FAN);
 		this.currentState = 1 - this.currentState; // so emitted ray initial conditions are now the 'current' state
 	}
@@ -304,13 +308,13 @@ Raytracer.prototype.render = function()
 		this.traceProgram.bind();
 		let stepDistance = this.marchDistance / this.maxNumSteps;
 		let lengthScale = 1.0;
-		if (typeof potentialObj.getScale !== "undefined") 
+		if (typeof potentialObj.getScale !== "undefined")
 		{
 			lengthScale = potentialObj.getScale();
 		}
-		this.traceProgram.uniformF("lengthScale", lengthScale); 
-		this.traceProgram.uniformF("stepDistance", stepDistance); 
-		if (typeof potentialObj.syncProgram !== "undefined") 
+		this.traceProgram.uniformF("lengthScale", lengthScale);
+		this.traceProgram.uniformF("stepDistance", stepDistance);
+		if (typeof potentialObj.syncProgram !== "undefined")
 		{
 			potentialObj.syncProgram(gravy, this.traceProgram);    // upload current potential parameters
 		}
@@ -397,7 +401,7 @@ Raytracer.prototype.render = function()
 
 	this.fbo.unbind();
 	gl.disable(gl.BLEND);
-	
+
 	// Final composite of normalized fluence to window
 	this.raysTraced += this.raySize*this.raySize;
 	this.composite();
@@ -421,4 +425,3 @@ Raytracer.prototype.resize = function(width, height)
 
 	this.reset();
 }
-

@@ -34,7 +34,7 @@ There is an experimental system for visualizing with color bands the "time delay
 
 Note that authoring a demo requires nothing more than the external javascript link
 ```html
-<script src="https://rawgit.com/portsmouth/gravy/v1.0.2/js/compiled/gravy.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/portsmouth/gravy@v1.0.2/js/compiled/gravy.min.js"></script>
 ```
 So demos can be hosted anywhere, e.g. in your own GitHub repo and served via RawGit.
 

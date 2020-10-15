@@ -1,7 +1,7 @@
-   
+
 <body onload="onLoad();">
 
-<script src="https://rawgit.com/portsmouth/gravy/v1.0.2/js/compiled/gravy.min.js"></script>
+<script src="/Users/jonnyhyman/repos/gravy/js/compiled/gravy.min.js"></script>
 
 <?/* ------------------------------------------------------------------*/?>
 <?/*               gravitational potential definition                  */?>
@@ -17,14 +17,14 @@ Potential.prototype.init = function(gravy)
     let raytracer  = gravy.getRaytracer();
     let camera    = gravy.getCamera();
     let controls  = gravy.getControls();
-        
+
     // Mass distribution parameters
     this.mass = {};
     this.mass.perpoffset = 0;
     this.mass.mass = 1.6913319238900635;
     this.mass.disk_radius = 2.3678646934460885;
     this.mass.disk_height = 0.3382663847780127;
-        
+
     gravy.showGUI(true);
 
     /** Camera settings **/
@@ -59,7 +59,7 @@ this.mass.perpoffset = ${this.mass.perpoffset};
 this.mass.mass = ${this.mass.mass};
 this.mass.disk_radius = ${this.mass.disk_radius};
 this.mass.disk_height = ${this.mass.disk_height};
-    `; 
+    `;
 }
 
 
@@ -97,25 +97,25 @@ Potential.prototype.program = function()
     `;
 }
 
-Potential.prototype.syncProgram = function(gravy, program) 
-{ 
+Potential.prototype.syncProgram = function(gravy, program)
+{
     let d = this.mass.perpoffset;
     program.uniform3Fv("position", [0, d, 0]);
-    program.uniformF("mass", this.mass.mass); 
+    program.uniformF("mass", this.mass.mass);
     program.uniformF("disk_radius", this.mass.disk_radius);
     program.uniformF("disk_height", this.mass.disk_height);
-    program.uniformF("perpoffset", this.mass.perpoffset); 
+    program.uniformF("perpoffset", this.mass.perpoffset);
 }
 
 Potential.prototype.getName = function() { return 'Disk distribution'; }
 Potential.prototype.getURL = function() { return "https://github.com/portsmouth/gravy/blob/master/exampleScenes/disk.html"; }
 
-Potential.prototype.initGui = function(gui) 
-{ 
+Potential.prototype.initGui = function(gui)
+{
     gui.addSlider(this.mass, {name: 'mass', min: 0.0, max: 2.0});
     gui.addSlider(this.mass, {name: 'disk_radius', min: 0.0, max: 30.0});
     gui.addSlider(this.mass, {name: 'disk_height', min: 0.0, max: 5.0});
-    gui.addSlider(this.mass, {name: 'perpoffset', min: -10.0, max: 10.0}); 
+    gui.addSlider(this.mass, {name: 'perpoffset', min: -10.0, max: 10.0});
 }
 
 </script>

@@ -1,7 +1,7 @@
 
-/** 
+/**
 * Gravy is the global object providing access to all functionality in the system.
-* @constructor 
+* @constructor
 * @param {Potential} sceneObj - The object defining the gravitational potential
 */
 var Gravy = function(potentialObj)
@@ -51,7 +51,7 @@ var Gravy = function(potentialObj)
 	// Instantiate raytracer
 	this.raytracer = new Raytracer();
 	this.auto_resize = true;
-		
+
 	// Allow user to define the gravitational potential, and also programmatically initialize the camera and raytracer
 	this.initPotential();
 
@@ -69,7 +69,7 @@ var Gravy = function(potentialObj)
 	window.addEventListener( 'click', this, false );
 	window.addEventListener( 'keydown', this, false );
 
-	this.initialized = true; 
+	this.initialized = true;
 }
 
 /**
@@ -97,7 +97,7 @@ Gravy.prototype.handleEvent = function(event)
 
 /**
 * Access to the Renderer object
-*  @returns {Renderer} 
+*  @returns {Renderer}
 */
 Gravy.prototype.getRaytracer = function()
 {
@@ -113,7 +113,7 @@ Gravy.prototype.getPotential = function()
 
 /**
 * Access to the GUI object
-*  @returns {GUI} 
+*  @returns {GUI}
 */
 Gravy.prototype.getGUI = function()
 {
@@ -138,7 +138,7 @@ Gravy.prototype.getControls = function()
 	return this.camControls;
 }
 
-/** 
+/**
  * @returns {WebGLRenderingContext} The webGL context
  */
 Gravy.prototype.getGLContext = function()
@@ -171,11 +171,11 @@ let camera    = gravy.getCamera();
 let controls  = gravy.getControls();
 	`;
 
-	if (typeof this.potentialObj.initGenerator !== "undefined") 
+	if (typeof this.potentialObj.initGenerator !== "undefined")
 	{
 		code += this.potentialObj.initGenerator();
 	}
-	
+
 	code += this.guiVisible ? `\ngravy.showGUI(true);\n` : `\ngravy.showGUI(false);\n`;
 
 	code += `
@@ -217,14 +217,14 @@ Gravy.prototype.initPotential = function()
 	if (typeof this.potentialObj.getMinScale !== "undefined") this.minScale = this.potentialObj.getMinScale();
 	if (typeof this.potentialObj.getMaxScale !== "undefined") this.maxScale = this.potentialObj.getMaxScale();
 	this.minScale = Math.max(1.0e-6, this.minScale);
-	this.maxScale = Math.min(1.0e20, this.maxScale); 
+	this.maxScale = Math.min(1.0e20, this.maxScale);
 
 	// Set initial default camera position and target based on max scale
 	let po = lengthScale; // @todo: should be e.g. 10.0 * this.sceneScale
 	this.camera.position.set(po, po, po);
 	this.camControls.target.set(0.0, 0.0, 0.0);
 
-	// Call user-defined init function	
+	// Call user-defined init function
 	if (typeof this.potentialObj.init != "undefined") this.potentialObj.init(this);
 
 	// Read optional scene name and URL, if provided
@@ -232,7 +232,7 @@ Gravy.prototype.initPotential = function()
 	this.sceneURL = '';
 	if (typeof this.potentialObj.getName !== "undefined") this.sceneName = this.potentialObj.getName();
 	if (typeof this.potentialObj.getURL !== "undefined") this.sceneURL = this.potentialObj.getURL();
-	
+
 	// cache initial camera position to allow reset on 'F'
 	this.initial_camera_position = new THREE.Vector3();
 	this.initial_camera_position.copy(this.camera.position);
@@ -240,31 +240,112 @@ Gravy.prototype.initPotential = function()
 	this.initial_camera_target.copy(this.camControls.target);
 
 	// Compile GLSL shaders
-  	this.raytracer.compileShaders();
+	this.raytracer.compileShaders();
 
-  	// Fix renderer to width & height, if they were specified
-  	if ((typeof this.raytracer.width!=="undefined") && (typeof this.raytracer.height!=="undefined"))
-  	{
-  		this.auto_resize = false;
-  		this._resize(this.raytracer.width, this.raytracer.height);
-  	}
+	// Fix renderer to width & height, if they were specified
+	if ((typeof this.raytracer.width!=="undefined") && (typeof this.raytracer.height!=="undefined"))
+	{
+		this.auto_resize = false;
+		this._resize(this.raytracer.width, this.raytracer.height);
+	}
 
 	// Camera setup
 	this.camera.near = this.minScale;
 	this.camera.far  = this.maxScale;
-	this.camControls.update();	
+	this.camControls.update();
 	this.reset(false);
+
+	// Saver Setup
+	this.animFrame = 0;
 }
 
 
 // Renderer reset on camera or other parameters update
 Gravy.prototype.reset = function(no_recompile = false)
-{	
+{
 	if (!this.initialized || this.terminated) return;
 	this.raytracer.reset(no_recompile);
 }
-   
-// Render all 
+
+
+///////////////////////////////////
+Gravy.prototype.preframeCallback = function(gl)
+{
+	let renderer  = this.getRaytracer();
+	let camera    = this.getCamera();
+	let gui       = this.getGUI();
+
+	let FPS = 24.0;
+	let time = this.animFrame/FPS;
+	this.endFrame = 30.0 * FPS; // frames = seconds * frames/second
+
+	if (this.animFrame > this.endFrame) this.animFrame = 0;
+	if (this.animFrame==0)
+	{
+		this.advanceFrame = false;
+		///
+		// Do any one-time initial setup of the scene state here
+		///
+	}
+
+	///
+	// Animate scene state according to current time value here
+	// (e.g. update scene, camera, materials or renderer parameters)
+	///
+
+	// animate camera (here a simple 'turntable' orbit about the original cam target)
+	//let axis = camera.up;
+
+
+	if (this.animFrame==0)
+	{
+		this.advanceFrame = false;
+	}
+
+	// Advance scene state to next anim frame, if we just exported a rendered frame
+	if (this.advanceFrame)
+	{
+		gui.sync();
+		let no_recompile = true;
+		this.reset(no_recompile);
+		this.advanceFrame = false;
+	}
+}
+
+Gravy.prototype.postframeCallback = function(gl)
+{
+	// return;
+	let renderer  = this.getRaytracer();
+	let targetWaves = 1.0;
+
+	console.log('waves, target: ' + renderer.wavesTraced + ' '+ targetWaves);
+	console.log('animF, endFra: ' + this.animFrame + ' '+ this.endFrame);
+
+	// User code to post webGL framebuffer data to local server for processing
+	if (this.animFrame>=0 && renderer.wavesTraced>=targetWaves && this.animFrame<=this.endFrame)
+	{
+		console.log(this.animFrame);
+		let dataURI = gl.canvas.toDataURL();
+		var mimetype = dataURI.split(",")[0].split(':')[1].split(';')[0];
+		var byteString = atob(dataURI.split(',')[1]);
+		var u8a = new Uint8Array(byteString.length);
+		for (var i = 0; i < byteString.length; i++)
+		{
+			u8a[i] = byteString.charCodeAt(i);
+		}
+		let blob = new Blob([u8a.buffer], { type: mimetype });
+		let r = new XMLHttpRequest();
+		r.open('POST', 'http://localhost:3999/' + this.animFrame, false);
+		r.send(blob);
+
+		this.advanceFrame = true;
+		this.animFrame++;
+	}
+}
+///////////////////////////////////
+
+
+// Render all
 Gravy.prototype.render = function()
 {
 	var gl = GLU.gl;
@@ -276,10 +357,14 @@ Gravy.prototype.render = function()
 	if (this.potentialObj == null) return;
 	this.rendering = true;
 
+	this.preframeCallback(gl);
+
 	// Render lensed light via raytracing
 	this.raytracer.render();
 
-	// Update HUD text canvas	
+	this.postframeCallback(gl);
+
+	// Update HUD text canvas
 	this.textCtx.textAlign = "left";   	// This determines the alignment of text, e.g. left, center, right
 	this.textCtx.textBaseline = "middle";	// This determines the baseline of the text, e.g. top, middle, bottom
 	this.textCtx.font = '12px monospace';	// This determines the size of the text and the font family used
@@ -293,8 +378,8 @@ Gravy.prototype.render = function()
 	  	else                  this.textCtx.fillStyle = "#ffff00";
 	  	let ver = this.getVersion();
 	  	this.textCtx.strokeText('Gravy v'+ver[0]+'.'+ver[1]+'.'+ver[2], 14, 20);
-	  	this.textCtx.fillText('Gravy lensing simulator v'+ver[0]+'.'+ver[1]+'.'+ver[2], 14, 20);
-	  	
+	  	this.textCtx.fillText('JONNY lensing simulator v'+ver[0]+'.'+ver[1]+'.'+ver[2], 14, 20);
+
 	  	if (this.sceneName != '')
 	  	{
 	  		this.textCtx.fillStyle = "#ffaa22";
@@ -377,11 +462,11 @@ Gravy.prototype.resize = function()
 
 Gravy.prototype.onClick = function(event)
 {
-	if (this.onGravyLink) 
+	if (this.onGravyLink)
 	{
     	window.location = "https://github.com/portsmouth/gravy";
     }
-    if (this.onUserLink) 
+    if (this.onUserLink)
 	{
     	window.location = this.sceneURL;
     }
@@ -440,7 +525,7 @@ Gravy.prototype.onkeydown = function(event)
 			this.reset(true);
 			break;
 
-		case 82: // R key: reset scene 
+		case 82: // R key: reset scene
 			this.initPotential();
 			break;
 
@@ -448,7 +533,7 @@ Gravy.prototype.onkeydown = function(event)
 			this.guiVisible = !this.guiVisible;
 			gravy.getGUI().toggleHide();
 			break;
-		
+
 		case 79: // O key: output scene settings code to console
 			let code = this.dumpScene();
 			console.log(code);
@@ -477,8 +562,8 @@ Gravy.prototype.onkeydown = function(event)
 			this.reset(true);
 			break;
 		}
-		
-		case 65: // A key: cam left 
+
+		case 65: // A key: cam left
 		{
 			let toTarget = new THREE.Vector3();
 			toTarget.copy(this.camControls.target);
@@ -494,7 +579,7 @@ Gravy.prototype.onkeydown = function(event)
 			this.reset(true);
 			break;
 		}
-		
+
 		case 83: // S key: cam back
 		{
 			let toTarget = new THREE.Vector3();
@@ -510,8 +595,8 @@ Gravy.prototype.onkeydown = function(event)
 			this.reset(true);
 			break;
 		}
-		
-		case 68: // S key: cam right 
+
+		case 68: // S key: cam right
 		{
 			let toTarget = new THREE.Vector3();
 			toTarget.copy(this.camControls.target);
@@ -538,8 +623,3 @@ function camChanged()
 		gravy.reset(no_recompile);
 	}
 }
-
-
-
-
-
