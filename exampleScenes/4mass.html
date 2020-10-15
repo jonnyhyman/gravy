@@ -1,7 +1,7 @@
-   
+
 <body onload="onLoad();">
 
-<script src="https://cdn.jsdelivr.net/gh/portsmouth/gravy@v1.0.2/js/compiled/gravy.min.js"></script>
+<script src="../js/compiled/gravy.min.js"></script>
 
 <?/* ------------------------------------------------------------------*/?>
 <?/*               gravitational potential definition                  */?>
@@ -17,7 +17,7 @@ Potential.prototype.init = function(gravy)
     let raytracer  = gravy.getRaytracer();
     let camera    = gravy.getCamera();
     let controls  = gravy.getControls();
-        
+
     // Mass distribution parameters
     this.mass = {};
     this.mass.profiles = ['point', 'uniform_sphere', 'isothermal_sphere', 'Plummer', 'NFW', 'Hernquist', 'Jaffe'];
@@ -45,7 +45,7 @@ Potential.prototype.init = function(gravy)
     this.mass.Zoffset2 = -5.489781536293164;
     this.mass.Zoffset3 = -1.4305849189570115;
     this.mass.Zoffset4 = 4.207188160676534;
-        
+
     gravy.showGUI(true);
 
     /** Camera settings **/
@@ -101,7 +101,7 @@ this.mass.Zoffset1 = ${this.mass.Zoffset1};
 this.mass.Zoffset2 = ${this.mass.Zoffset2};
 this.mass.Zoffset3 = ${this.mass.Zoffset3};
 this.mass.Zoffset4 = ${this.mass.Zoffset4};
-    `; 
+    `;
 }
 
 
@@ -156,7 +156,7 @@ Potential.prototype.program = function()
     {
         float r = length(X - P);
         // NB, 'M' here is actually density at radius a
-        return 4.0*M_PI*M*a*a*log(r/a); 
+        return 4.0*M_PI*M*a*a*log(r/a);
     }
 
     float POTENTIAL_Plummer(in vec3 X, in vec3 P, float M, float a)
@@ -195,18 +195,18 @@ Potential.prototype.program = function()
     `;
 }
 
-Potential.prototype.syncProgram = function(gravy, program) 
-{ 
+Potential.prototype.syncProgram = function(gravy, program)
+{
     program.uniform3Fv("position1", [this.mass.axisoffset1, this.mass.Yoffset1, this.mass.Zoffset1]);
     program.uniform3Fv("position2", [this.mass.axisoffset2, this.mass.Yoffset2, this.mass.Zoffset2]);
     program.uniform3Fv("position3", [this.mass.axisoffset3, this.mass.Yoffset3, this.mass.Zoffset3]);
     program.uniform3Fv("position4", [this.mass.axisoffset4, this.mass.Yoffset4, this.mass.Zoffset4]);
-    program.uniformF("mass1", this.mass.mass1); 
+    program.uniformF("mass1", this.mass.mass1);
     program.uniformF("mass2", this.mass.mass2);
-    program.uniformF("mass3", this.mass.mass3); 
-    program.uniformF("mass4", this.mass.mass4); 
+    program.uniformF("mass3", this.mass.mass3);
+    program.uniformF("mass4", this.mass.mass4);
     program.uniformF("radius1", this.mass.radius1);
-    program.uniformF("radius2", this.mass.radius2); 
+    program.uniformF("radius2", this.mass.radius2);
     program.uniformF("radius3", this.mass.radius3);
     program.uniformF("radius4", this.mass.radius4);
 }
@@ -214,8 +214,8 @@ Potential.prototype.syncProgram = function(gravy, program)
 Potential.prototype.getName = function() { return 'A four mass system'; }
 Potential.prototype.getURL = function() { return "https://github.com/portsmouth/gravy/blob/master/exampleScenes/4mass.html"; }
 
-Potential.prototype.initGui = function(gui) 
-{ 
+Potential.prototype.initGui = function(gui)
+{
     this.typeItem1 = gui.getUserFolder().add(this.mass, 'profile1', this.mass.profiles);
     this.typeItem2 = gui.getUserFolder().add(this.mass, 'profile2', this.mass.profiles);
     this.typeItem3 = gui.getUserFolder().add(this.mass, 'profile3', this.mass.profiles);
@@ -240,9 +240,9 @@ Potential.prototype.initGui = function(gui)
     gui.addSlider(this.mass, {name: 'Zoffset2', min: -10.0, max: 10.0});
     gui.addSlider(this.mass, {name: 'Zoffset3', min: -10.0, max: 10.0});
     gui.addSlider(this.mass, {name: 'Zoffset4', min: -10.0, max: 10.0});
-    gui.addSlider(this.mass, {name: 'axisoffset1', min: -10.0, max: 10.0}); 
+    gui.addSlider(this.mass, {name: 'axisoffset1', min: -10.0, max: 10.0});
     gui.addSlider(this.mass, {name: 'axisoffset2', min: -10.0, max: 10.0});
-    gui.addSlider(this.mass, {name: 'axisoffset3', min: -10.0, max: 10.0}); 
+    gui.addSlider(this.mass, {name: 'axisoffset3', min: -10.0, max: 10.0});
     gui.addSlider(this.mass, {name: 'axisoffset4', min: -10.0, max: 10.0});
 }
 

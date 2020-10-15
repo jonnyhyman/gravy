@@ -1,7 +1,7 @@
-   
+
 <body onload="onLoad();">
 
-<script src="https://cdn.jsdelivr.net/gh/portsmouth/gravy@v1.0.2/js/compiled/gravy.min.js"></script>
+<script src="../js/compiled/gravy.min.js"></script>
 
 <?/* ------------------------------------------------------------------*/?>
 <?/*               gravitational potential definition                  */?>
@@ -17,7 +17,7 @@ Potential.prototype.init = function(gravy)
     let raytracer  = gravy.getRaytracer();
     let camera    = gravy.getCamera();
     let controls  = gravy.getControls();
-        
+
     // Mass distribution parameters
     this.mass = {};
     this.mass.mass = 1;
@@ -25,7 +25,7 @@ Potential.prototype.init = function(gravy)
     this.mass.profile = 'Plummer';
     this.mass.radius = 1.6349541930937281;
     this.mass.perpoffset = 0;
-        
+
     gravy.showGUI(true);
 
     /** Camera settings **/
@@ -49,7 +49,7 @@ Potential.prototype.init = function(gravy)
     raytracer.colorB = [1, 1, 1];
 
     /******* copy-pasted console output on 'O', end *******/
-    
+
 }
 
 Potential.prototype.initGenerator = function()
@@ -62,7 +62,7 @@ this.mass.profiles = ['point', 'uniform_sphere', 'isothermal_sphere', 'Plummer',
 this.mass.profile = '${this.mass.profile}';
 this.mass.radius = ${this.mass.radius};
 this.mass.perpoffset = ${this.mass.perpoffset};
-    `; 
+    `;
 }
 
 
@@ -106,7 +106,7 @@ Potential.prototype.program = function()
     {
         float r = length(X - P);
         // NB, 'M' here is actually density at radius a
-        return 4.0*M_PI*M*a*a*log(r/a); 
+        return 4.0*M_PI*M*a*a*log(r/a);
     }
 
     float POTENTIAL_Plummer(in vec3 X, in vec3 P, float M, float a)
@@ -141,24 +141,24 @@ Potential.prototype.program = function()
     `;
 }
 
-Potential.prototype.syncProgram = function(gravy, program) 
-{ 
+Potential.prototype.syncProgram = function(gravy, program)
+{
     let d = this.mass.perpoffset;
     program.uniform3Fv("position", [0, d, 0]);
-    program.uniformF("mass", this.mass.mass); 
-    program.uniformF("radius", this.mass.radius); 
+    program.uniformF("mass", this.mass.mass);
+    program.uniformF("radius", this.mass.radius);
 }
 
 Potential.prototype.getName = function() { return 'A one mass system'; }
 Potential.prototype.getURL = function() { return "https://github.com/portsmouth/gravy/blob/master/exampleScenes/1mass.html"; }
 
-Potential.prototype.initGui = function(gui) 
-{ 
+Potential.prototype.initGui = function(gui)
+{
     this.typeItem = gui.getUserFolder().add(this.mass, 'profile', this.mass.profiles);
     this.typeItem.onChange( function(value) { gravy.reset(); } );
     gui.addSlider(this.mass, {name: 'mass', min: 0.0, max: 5.0});
     gui.addSlider(this.mass, {name: 'radius', min: 0.0, max: 5.0});
-    gui.addSlider(this.mass, {name: 'perpoffset', min: -10.0, max: 10.0}); 
+    gui.addSlider(this.mass, {name: 'perpoffset', min: -10.0, max: 10.0});
 }
 
 </script>

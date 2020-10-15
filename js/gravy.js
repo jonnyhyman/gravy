@@ -378,7 +378,7 @@ Gravy.prototype.render = function()
 	  	else                  this.textCtx.fillStyle = "#ffff00";
 	  	let ver = this.getVersion();
 	  	this.textCtx.strokeText('Gravy v'+ver[0]+'.'+ver[1]+'.'+ver[2], 14, 20);
-	  	this.textCtx.fillText('JONNY lensing simulator v'+ver[0]+'.'+ver[1]+'.'+ver[2], 14, 20);
+	  	this.textCtx.fillText('RENDERING Gravy lensing simulator v'+ver[0]+'.'+ver[1]+'.'+ver[2], 14, 20);
 
 	  	if (this.sceneName != '')
 	  	{

@@ -1,7 +1,7 @@
-   
+
 <body onload="onLoad();">
 
-<script src="https://cdn.jsdelivr.net/gh/portsmouth/gravy@v1.0.2/js/compiled/gravy.min.js"></script>
+<script src="../js/compiled/gravy.min.js"></script>
 
 <?/* ------------------------------------------------------------------*/?>
 <?/*               gravitational potential definition                  */?>
@@ -17,11 +17,11 @@ Potential.prototype.init = function(gravy)
     let raytracer  = gravy.getRaytracer();
     let camera    = gravy.getCamera();
     let controls  = gravy.getControls();
-        
+
     // Mass distribution parameters
     this.mass = {};
     this.mass.mass = 0.9584214235377025;
-        
+
     gravy.showGUI(true);
 
     /** Camera settings **/
@@ -53,7 +53,7 @@ Potential.prototype.initGenerator = function()
 // Mass distribution parameters
 this.mass = {};
 this.mass.mass = ${this.mass.mass};
-    `; 
+    `;
 }
 
 
@@ -80,16 +80,16 @@ Potential.prototype.program = function()
     `;
 }
 
-Potential.prototype.syncProgram = function(gravy, program) 
-{ 
-    program.uniformF("mass", this.mass.mass); 
+Potential.prototype.syncProgram = function(gravy, program)
+{
+    program.uniformF("mass", this.mass.mass);
 }
 
 Potential.prototype.getName = function() { return 'Point mass lens'; }
 Potential.prototype.getURL = function() { return "https://github.com/portsmouth/gravy/blob/master/exampleScenes/pointmass.html"; }
 
-Potential.prototype.initGui = function(gui) 
-{ 
+Potential.prototype.initGui = function(gui)
+{
     gui.addSlider(this.mass, {name: 'mass', min: 0.0, max: 5.0});
 }
 
