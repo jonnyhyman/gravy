@@ -30,9 +30,9 @@ Potential.prototype.init = function(gravy)
     this.mass.profile3 = 'Plummer';
     this.mass.profile4 = 'Plummer';
     this.mass.mass1 = 2.9316420014094433;
-    this.mass.mass2 = 0.0;//4.679351656095842;
-    this.mass.mass3 = 0.0;//2.762508809020437;
-    this.mass.mass4 = 0.0;//2.9316420014094433;
+    this.mass.mass2 = 4.679351656095842;
+    this.mass.mass3 = 2.762508809020437;
+    this.mass.mass4 = 2.9316420014094433;
     this.mass.radius1 = 3.4954193093727977;
     this.mass.radius2 = 3.83368569415081;
     this.mass.radius3 = 1.6913319238900635;
@@ -59,7 +59,7 @@ Potential.prototype.init = function(gravy)
     controls.target.set(-2.939742066201208, 0.3069374493255145, -8.215868450424074);
 
     /** Raytracer settings **/
-    raytracer.raySize = 128;
+    raytracer.raySize = 256;
     raytracer.maxNumSteps = 256;
     raytracer.marchDistance = 202.9598308668076;
     raytracer.exposure = 8.717406624383369;
@@ -69,7 +69,8 @@ Potential.prototype.init = function(gravy)
     raytracer.sourceBeamAngle = 109.59830866807611;
     raytracer.timeScale = 51.86751233262861;
     raytracer.timePeriodSecs = 6.088794926004228;
-    raytracer.colorA = [0, 0.1418685121107265, 0.4019607843137255];
+    //raytracer.colorA = [0, 0.1418685121107265, 0.4019607843137255];
+    raytracer.colorA = [1, 1, 1];
     raytracer.colorB = [1, 1, 1];
 
     /******* copy-pasted console output on 'O', end *******/
