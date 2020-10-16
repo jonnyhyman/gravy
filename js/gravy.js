@@ -86,12 +86,14 @@ Gravy.prototype.handleEvent = function(event)
 	switch (event.type)
 	{
 		case 'resize':      this.resize();  break;
+		/*
 		case 'mousemove':   this.onDocumentMouseMove(event);  break;
 		case 'mousedown':   this.onDocumentMouseDown(event);  break;
 		case 'mouseup':     this.onDocumentMouseUp(event);    break;
 		case 'contextmenu': this.onDocumentRightClick(event); break;
 		case 'click':       this.onClick(event);  break;
 		case 'keydown':     this.onkeydown(event);  break;
+		*/
 	}
 }
 
@@ -273,13 +275,19 @@ Gravy.prototype.preframeCallback = function(gl)
 {
 	let renderer  = this.getRaytracer();
 	let camera    = this.getCamera();
+	let controls  = this.getControls();
 	let gui       = this.getGUI();
 
 	let FPS = 24.0;
 	let time = this.animFrame/FPS;
-	this.endFrame = 30.0 * FPS; // frames = seconds * frames/second
+	this.endFrame = 10.0 * FPS; // frames = seconds * frames/second
 
-	if (this.animFrame > this.endFrame) this.animFrame = 0;
+	/*
+		 CAMERA CHANGE  =  RE RENDER ALL LINES (ie. this.reset() occurs)
+		 - will make shapiro effect fail
+	*/
+	let movement = false;
+
 	if (this.animFrame==0)
 	{
 		this.advanceFrame = false;
@@ -293,9 +301,23 @@ Gravy.prototype.preframeCallback = function(gl)
 	// (e.g. update scene, camera, materials or renderer parameters)
 	///
 
-	// animate camera (here a simple 'turntable' orbit about the original cam target)
-	//let axis = camera.up;
+  let i = (this.animFrame)/this.endFrame; // [0 -> 1] completion interpolant
 
+	console.log("interpolant : " + i);
+
+	if (movement==true){
+
+			let pos0 = new THREE.Vector3(-80.50191689209592, 61.07658249868336, -111.39383308993129);
+			let pos1 = new THREE.Vector3(-82.29843492907813, 86.58581022527527, 73.10256174781598);
+			let pos = new THREE.Vector3();
+
+			pos.addVectors( pos0.multiplyScalar(1.0 - i), pos1.multiplyScalar(i) );
+
+			console.log("set position : " + pos.x +' '+ pos.y +' '+ pos.z);
+
+			camera.position.set(pos.x, pos.y, pos.z);
+			controls.update();
+	}
 
 	if (this.animFrame==0)
 	{
@@ -305,9 +327,13 @@ Gravy.prototype.preframeCallback = function(gl)
 	// Advance scene state to next anim frame, if we just exported a rendered frame
 	if (this.advanceFrame)
 	{
-		gui.sync();
+		//gui.sync();
 		let no_recompile = true;
-		this.reset(no_recompile);
+
+		if (movement==true){
+			this.reset(no_recompile);
+		}
+
 		this.advanceFrame = false;
 	}
 }
@@ -316,10 +342,10 @@ Gravy.prototype.postframeCallback = function(gl)
 {
 	// return;
 	let renderer  = this.getRaytracer();
-	let targetWaves = 1.0;
+	let targetWaves = 50.0; // essentially a pre-delay
 
-	console.log('waves, target: ' + renderer.wavesTraced + ' '+ targetWaves);
-	console.log('animF, endFra: ' + this.animFrame + ' '+ this.endFrame);
+	//console.log('waves, target: ' + renderer.wavesTraced + ' '+ targetWaves);
+	//console.log('animF, endFra: ' + this.animFrame + ' '+ this.endFrame);
 
 	// User code to post webGL framebuffer data to local server for processing
 	if (this.animFrame>=0 && renderer.wavesTraced>=targetWaves && this.animFrame<=this.endFrame)
@@ -459,7 +485,7 @@ Gravy.prototype.resize = function()
 	}
 }
 
-
+/*
 Gravy.prototype.onClick = function(event)
 {
 	if (this.onGravyLink)
@@ -614,6 +640,7 @@ Gravy.prototype.onkeydown = function(event)
 		}
 	}
 }
+*/
 
 function camChanged()
 {

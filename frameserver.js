@@ -110,9 +110,14 @@ var fs = require('fs');
 var path = require('path');
 
 var outputDirPath = getCurrentDirectory();
-if (process.argv.length > 2)
+var outName = "frame";
+
+if (process.argv.length > 3)
 {
 	var relDir = process.argv[2];
+	outputDirPath = path.join(outputDirPath, relDir);
+
+	var outName = process.argv[3];
 	outputDirPath = path.join(outputDirPath, relDir);
 }
 
@@ -131,7 +136,7 @@ http.createServer( function (req, res)
         return;
     }
     var idx = req.url.split('/').pop();
-    var filename = ("0000" + idx).slice(-5)+".png";
+    var filename = outName+"-"+("0000" + idx).slice(-5)+".png";
     var filepath = path.join(outputDirPath, filename);
 
     var img = new Buffer('');
@@ -149,4 +154,5 @@ http.createServer( function (req, res)
 }).listen(port, '127.0.0.1');
 
 console.log('Server running at http://127.0.0.1:' + port + '/');
-console.log('  files will output to dir ' + outputDirPath)
+console.log('  files will output to dir ' + outputDirPath);
+console.log('  render file name ' + outName)
