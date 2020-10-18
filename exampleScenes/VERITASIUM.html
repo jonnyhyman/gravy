@@ -55,8 +55,10 @@ Potential.prototype.init = function(gravy)
     /** Camera settings **/
     gravy.fov = 45.;
     camera.up.set(0, 1, 0);
-    camera.position.set(-80.50191689209592, 61.07658249868336, -111.39383308993129);
-    controls.target.set(-2.939742066201208, 0.3069374493255145, -8.215868450424074);
+    //camera.position.set(-80.50191689209592, 61.07658249868336, -111.39383308993129);
+    // controls.target.set(-2.939742066201208, 0.3069374493255145, -8.215868450424074);
+    camera.position.set(0.0,142.0,0.0);
+    controls.target.set(0.0,0.0,0.0);
 
     /** Raytracer settings **/
     raytracer.raySize = 256;
@@ -66,11 +68,11 @@ Potential.prototype.init = function(gravy)
     raytracer.gamma = 1.4883720930232558;
     raytracer.sourceDist = 100;
     raytracer.sourceRadius = 1;
-    raytracer.sourceBeamAngle = 109.59830866807611;
+    raytracer.sourceBeamAngle = 160.0;//109.59830866807611;
     raytracer.timeScale = 51.86751233262861;
     raytracer.timePeriodSecs = 6.088794926004228;
-    //raytracer.colorA = [0, 0.1418685121107265, 0.4019607843137255];
-    raytracer.colorA = [1, 1, 1];
+    raytracer.colorA = [0, 0.1418685121107265, 0.4019607843137255];
+    //raytracer.colorA = [1, 1, 1];
     raytracer.colorB = [1, 1, 1];
 
     /******* copy-pasted console output on 'O', end *******/

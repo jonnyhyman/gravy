@@ -286,7 +286,7 @@ Gravy.prototype.preframeCallback = function(gl)
 		 CAMERA CHANGE  =  RE RENDER ALL LINES (ie. this.reset() occurs)
 		 - will make shapiro effect fail
 	*/
-	let movement = true;
+	let movement = false;
 
 	if (this.animFrame==0)
 	{
@@ -342,7 +342,7 @@ Gravy.prototype.postframeCallback = function(gl)
 {
 	// return;
 	let renderer  = this.getRaytracer();
-	let targetWaves = 4.0;//50.0; // essentially a pre-delay
+	let targetWaves = 100.0; // essentially a pre-delay
 
 	//console.log('waves, target: ' + renderer.wavesTraced + ' '+ targetWaves);
 	//console.log('animF, endFra: ' + this.animFrame + ' '+ this.endFrame);
